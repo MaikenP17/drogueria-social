@@ -1,0 +1,1622 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Droguería Social — Donde todos pueden comprar | Cúcuta</title>
+  <meta name="description" content="Droguería Social en Cúcuta. Medicamentos con y sin receta, domicilios gratis, abiertos todos los días. Av 11E No 5AN-202, Cúcuta, Norte de Santander." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── VARIABLES ─────────────────────────────────────────── */
+    :root {
+      --blue:        #140087;
+      --blue-light:  #1a00b5;
+      --yellow:      #f9db00;
+      --yellow-dark: #e0c500;
+      --dark:        #2b2636;
+      --mid:         #404968;
+      --light:       #f8f8fc;
+      --white:       #ffffff;
+      --shadow-sm:   0 2px 12px rgba(20,0,135,0.08);
+      --shadow-md:   0 8px 32px rgba(20,0,135,0.12);
+      --shadow-lg:   0 20px 60px rgba(20,0,135,0.18);
+      --radius:      12px;
+      --radius-lg:   20px;
+    }
+
+    /* ─── RESET ─────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Source Serif 4', Georgia, serif;
+      color: var(--dark);
+      background: var(--white);
+      overflow: hidden;
+    }
+    img { display: block; max-width: 100%; }
+    a { text-decoration: none; color: inherit; }
+    ul { list-style: none; }
+    button { cursor: pointer; border: none; background: none; font-family: inherit; }
+
+    /* ─── INTRO SCREEN ──────────────────────────────────────── */
+    #intro {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+    }
+
+    /* Las dos mitades: arrancan en translateY(0) → tapan todo desde el frame 1 */
+    .intro-top,
+    .intro-bottom {
+      position: absolute;
+      left: 0; right: 0;
+      height: 50%;
+      background: var(--blue);
+      display: flex;
+      justify-content: center;
+      overflow: hidden;
+      /* Sin transform inicial = translateY(0): pantalla cerrada desde el inicio */
+      transition: transform 1s cubic-bezier(0.76, 0, 0.24, 1);
+    }
+
+    /* Mitad superior: logo pegado al borde inferior (centro visual conjunto) */
+    .intro-top {
+      top: 0;
+      align-items: flex-end;
+      padding-bottom: 24px;
+    }
+
+    /* Mitad inferior: texto pegado al borde superior (centro visual conjunto) */
+    .intro-bottom {
+      bottom: 0;
+      align-items: flex-start;
+      padding-top: 24px;
+    }
+
+    /* Contenedor del logo */
+    .intro-logo-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    /* AJUSTE 1: logo más grande, protagonista */
+    .intro-logo {
+      width: 150px; height: 150px;
+      object-fit: contain;
+    }
+
+    .intro-bar {
+      width: 48px; height: 3px;
+      background: var(--yellow);
+      border-radius: 2px;
+    }
+
+    /* Contenedor del texto */
+    .intro-text-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .intro-name {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(1.8rem, 5vw, 3.2rem);
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: -0.02em;
+      text-align: center;
+    }
+
+    .intro-tagline {
+      font-family: 'Source Serif 4', serif;
+      font-size: 1rem;
+      font-weight: 300;
+      color: rgba(255,255,255,0.65);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    /* AJUSTE 2: apertura → cada mitad sale en su dirección */
+    #intro.splitting .intro-top    { transform: translateY(-100%); }
+    #intro.splitting .intro-bottom { transform: translateY(100%); }
+
+    /* ─── NAVBAR ─────────────────────────────────────────────── */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--white);
+      height: 68px;
+      display: flex;
+      align-items: center;
+      padding: 0 clamp(1rem, 5vw, 3rem);
+      box-shadow: 0 1px 0 rgba(20,0,135,0.08), var(--shadow-sm);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-right: auto;
+    }
+    .nav-logo img { height: 40px; width: auto; object-fit: contain; }
+    .nav-logo-text {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--blue);
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+    }
+    .nav-logo-sub {
+      font-size: 0.65rem;
+      font-weight: 400;
+      color: var(--mid);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .nav-links { display: flex; align-items: center; gap: 8px; }
+    .nav-links a {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--mid);
+      padding: 8px 14px;
+      border-radius: 8px;
+      transition: color 0.2s, background 0.2s;
+    }
+    .nav-links a:hover { color: var(--blue); background: rgba(20,0,135,0.05); }
+
+    .nav-cta {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 700;
+      background: var(--yellow);
+      color: var(--blue);
+      padding: 10px 20px;
+      border-radius: 8px;
+      margin-left: 12px;
+      transition: background 0.2s, transform 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .nav-cta:hover { background: var(--yellow-dark); transform: translateY(-1px); }
+    .nav-cta svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      padding: 8px;
+      border-radius: 8px;
+      margin-left: 12px;
+      transition: background 0.2s;
+    }
+    .hamburger:hover { background: var(--light); }
+    .hamburger span {
+      display: block;
+      width: 22px; height: 2px;
+      background: var(--dark);
+      border-radius: 2px;
+      transition: transform 0.3s, opacity 0.3s;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 68px; left: 0; right: 0;
+      background: var(--white);
+      padding: 20px clamp(1rem,5vw,3rem);
+      box-shadow: var(--shadow-md);
+      z-index: 99;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--dark);
+      padding: 14px 16px;
+      border-radius: 10px;
+      transition: background 0.2s;
+    }
+    .mobile-menu a:hover { background: var(--light); }
+    .mobile-menu .mob-cta {
+      background: var(--yellow);
+      color: var(--blue);
+      font-weight: 700;
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    /* ─── HERO ───────────────────────────────────────────────── */
+    .hero {
+      min-height: calc(100vh - 68px);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: 0;
+      padding: 0 clamp(1rem, 6vw, 5rem);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -120px; right: -120px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(249,219,0,0.12) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .hero-text {
+      padding: clamp(2rem, 5vw, 4rem) 0;
+      max-width: 540px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(20,0,135,0.06);
+      border: 1px solid rgba(20,0,135,0.15);
+      color: var(--blue);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 7px 16px;
+      border-radius: 100px;
+      margin-bottom: 24px;
+    }
+    .hero-badge::before {
+      content: '';
+      width: 8px; height: 8px;
+      background: #22c55e;
+      border-radius: 50%;
+      animation: pulse-dot 2s infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.6; transform: scale(0.8); }
+    }
+
+    .hero h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(2.2rem, 5vw, 4rem);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      color: var(--dark);
+      margin-bottom: 20px;
+    }
+    .hero h1 em {
+      font-style: normal;
+      color: var(--blue);
+      position: relative;
+    }
+    .hero h1 em::after {
+      content: '';
+      position: absolute;
+      bottom: 2px; left: 0; right: 0;
+      height: 5px;
+      background: var(--yellow);
+      border-radius: 3px;
+      z-index: -1;
+    }
+
+    .hero-desc {
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: var(--mid);
+      margin-bottom: 36px;
+      max-width: 440px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 56px;
+    }
+
+    .btn-primary {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      background: var(--blue);
+      color: var(--white);
+      padding: 14px 28px;
+      border-radius: 10px;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-primary:hover {
+      background: var(--blue-light);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(20,0,135,0.25);
+    }
+
+    .btn-secondary {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      background: var(--yellow);
+      color: var(--blue);
+      padding: 14px 28px;
+      border-radius: 10px;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-secondary:hover {
+      background: var(--yellow-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(249,219,0,0.4);
+    }
+
+    .hero-stats { display: flex; gap: 32px; flex-wrap: wrap; }
+    .stat-item  { display: flex; flex-direction: column; gap: 2px; }
+    .stat-num {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--blue);
+      line-height: 1;
+    }
+    .stat-label { font-size: 0.78rem; color: var(--mid); font-weight: 400; }
+    .stat-divider {
+      width: 1px;
+      background: rgba(64,73,104,0.2);
+      align-self: stretch;
+    }
+
+    /* ─── VIDEO PLACEHOLDER ──────────────────────────────────── */
+    .hero-visual {
+      padding: clamp(2rem,4vw,3rem) 0 clamp(2rem,4vw,3rem) clamp(1.5rem,4vw,3rem);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .video-container {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: var(--light);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 2px solid rgba(20,0,135,0.1);
+      box-shadow: var(--shadow-lg);
+    }
+    .video-container video,
+    .video-container iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      border: none;
+    }
+
+    .video-placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      background: linear-gradient(135deg, #f0f0fa 0%, #e8e8f5 100%);
+    }
+
+    .play-btn {
+      width: 72px; height: 72px;
+      background: var(--blue);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 0 12px rgba(20,0,135,0.12), 0 0 0 24px rgba(20,0,135,0.06);
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+    }
+    .play-btn:hover {
+      transform: scale(1.08);
+      box-shadow: 0 0 0 16px rgba(20,0,135,0.12), 0 0 0 32px rgba(20,0,135,0.06);
+    }
+    .play-btn svg { width: 28px; height: 28px; fill: white; margin-left: 4px; }
+
+    .video-label {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--mid);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .video-note {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.78rem;
+      color: rgba(64,73,104,0.5);
+      text-align: center;
+      padding: 6px 16px;
+      background: rgba(20,0,135,0.04);
+      border-radius: 8px;
+      border: 1px dashed rgba(20,0,135,0.15);
+    }
+
+    /* ─── SECTIONS ───────────────────────────────────────────── */
+    section { padding: clamp(3rem,8vw,6rem) clamp(1rem,6vw,5rem); }
+    .section-label {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(1.8rem,4vw,2.8rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--dark);
+      line-height: 1.15;
+      margin-bottom: 14px;
+    }
+    .section-sub {
+      font-size: 1rem;
+      color: var(--mid);
+      line-height: 1.7;
+      max-width: 480px;
+    }
+    .section-header { margin-bottom: clamp(2rem,5vw,3.5rem); }
+
+    /* ─── REVEAL ─────────────────────────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ─── PRODUCTS ───────────────────────────────────────────── */
+    #productos { background: var(--white); }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+
+    .product-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 1px solid rgba(20,0,135,0.08);
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .product-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-lg);
+      border-color: rgba(20,0,135,0.2);
+    }
+
+    .product-img-wrap {
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      background: var(--light);
+      position: relative;
+    }
+    .product-img-wrap img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+    .product-card:hover .product-img-wrap img { transform: scale(1.05); }
+
+    .product-badge {
+      position: absolute;
+      top: 12px; left: 12px;
+      background: var(--yellow);
+      color: var(--blue);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 100px;
+      letter-spacing: 0.04em;
+    }
+
+    .product-info {
+      padding: 16px 18px 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .product-category {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--blue);
+      opacity: 0.7;
+    }
+
+    .product-name {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--dark);
+      line-height: 1.3;
+    }
+
+    .product-price {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--blue);
+      margin-top: 2px;
+    }
+    .product-price-label { font-size: 0.7rem; font-weight: 400; color: var(--mid); }
+
+    .btn-add { margin-top: auto; padding-top: 12px; display: flex; gap: 8px; }
+
+    .btn-carrito {
+      flex: 1;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      background: var(--blue);
+      color: var(--white);
+      padding: 11px 16px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+      text-align: center;
+    }
+    .btn-carrito:hover { background: var(--blue-light); transform: translateY(-1px); }
+
+    .btn-whatsapp-prod {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      background: #25D366;
+      color: var(--white);
+      padding: 11px 14px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-whatsapp-prod:hover { background: #1db954; transform: translateY(-1px); }
+    .btn-whatsapp-prod svg { width: 16px; height: 16px; fill: white; }
+
+    /* ─── QUIÉNES SOMOS ─────────────────────────────────────── */
+    #nosotros { background: var(--light); }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(2rem,6vw,5rem);
+      align-items: center;
+    }
+
+    .about-values { display: flex; flex-direction: column; gap: 16px; margin-top: 32px; }
+
+    .value-card {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      background: var(--white);
+      padding: 20px;
+      border-radius: var(--radius);
+      border-left: 4px solid var(--blue);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .value-icon {
+      width: 44px; height: 44px;
+      background: rgba(20,0,135,0.08);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .value-icon svg { width: 22px; height: 22px; fill: var(--blue); }
+
+    .value-text h4 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 4px;
+    }
+    .value-text p { font-size: 0.88rem; color: var(--mid); line-height: 1.6; }
+
+    .about-visual { display: flex; flex-direction: column; gap: 20px; }
+
+    .about-big-stat {
+      background: var(--blue);
+      color: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      text-align: center;
+    }
+    .about-big-stat .big-num {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(3rem,7vw,5rem);
+      font-weight: 900;
+      line-height: 1;
+      color: var(--yellow);
+    }
+    .about-big-stat .big-label {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1rem;
+      font-weight: 500;
+      opacity: 0.85;
+      margin-top: 8px;
+    }
+
+    .about-mini-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .mini-stat {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 24px;
+      text-align: center;
+      border: 1px solid rgba(20,0,135,0.08);
+      box-shadow: var(--shadow-sm);
+    }
+    .mini-stat .m-num {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--blue);
+      line-height: 1;
+    }
+    .mini-stat .m-label { font-size: 0.8rem; color: var(--mid); margin-top: 4px; }
+
+    /* ─── CONTACTO ───────────────────────────────────────────── */
+    #contacto { background: var(--white); }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(2rem,5vw,4rem);
+      align-items: start;
+    }
+
+    .contact-form {
+      background: var(--light);
+      border-radius: var(--radius-lg);
+      padding: clamp(1.5rem,4vw,2.5rem);
+      border: 1px solid rgba(20,0,135,0.08);
+    }
+
+    .form-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 6px;
+    }
+    .form-sub { font-size: 0.88rem; color: var(--mid); margin-bottom: 24px; line-height: 1.6; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+
+    .form-group label {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--dark);
+      letter-spacing: 0.02em;
+    }
+    .form-group label span { color: #e63946; }
+
+    .form-group input,
+    .form-group textarea {
+      font-family: 'Source Serif 4', serif;
+      font-size: 0.9rem;
+      color: var(--dark);
+      background: var(--white);
+      border: 1.5px solid rgba(20,0,135,0.15);
+      border-radius: 8px;
+      padding: 11px 14px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(20,0,135,0.1);
+    }
+    .form-group input.error { border-color: #e63946; }
+    .form-group textarea { resize: vertical; min-height: 80px; }
+
+    .checkbox-group {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .checkbox-group input[type="checkbox"] {
+      width: 18px; height: 18px;
+      flex-shrink: 0;
+      margin-top: 2px;
+      accent-color: var(--blue);
+      cursor: pointer;
+    }
+    .checkbox-group label { font-size: 0.82rem; color: var(--mid); line-height: 1.5; cursor: pointer; }
+    .checkbox-group label a { color: var(--blue); text-decoration: underline; }
+
+    .form-error { font-family: 'Outfit', sans-serif; font-size: 0.75rem; color: #e63946; margin-top: 3px; }
+
+    .btn-submit {
+      width: 100%;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      background: var(--blue);
+      color: var(--white);
+      padding: 14px 24px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-submit:hover {
+      background: var(--blue-light);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(20,0,135,0.25);
+    }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .form-success { display: none; text-align: center; padding: 32px; }
+    .form-success .check-icon {
+      width: 64px; height: 64px;
+      background: #22c55e;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+    }
+    .form-success .check-icon svg { width: 32px; height: 32px; stroke: white; fill: none; }
+    .form-success h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 8px;
+    }
+    .form-success p { font-size: 0.9rem; color: var(--mid); }
+
+    /* Contact Info */
+    .contact-info { display: flex; flex-direction: column; gap: 24px; }
+
+    .map-embed {
+      width: 100%;
+      aspect-ratio: 4/3;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 1px solid rgba(20,0,135,0.1);
+    }
+    .map-embed iframe { width: 100%; height: 100%; border: none; }
+
+    .contact-details { display: flex; flex-direction: column; gap: 14px; }
+
+    .contact-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 16px;
+      background: var(--light);
+      border-radius: var(--radius);
+      border: 1px solid rgba(20,0,135,0.06);
+      transition: box-shadow 0.2s;
+    }
+    .contact-item:hover { box-shadow: var(--shadow-sm); }
+    .contact-item a { transition: color 0.2s; }
+    .contact-item a:hover { color: var(--blue); }
+
+    .contact-icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .contact-icon svg { width: 20px; height: 20px; }
+    .ci-blue { background: rgba(20,0,135,0.08); }    .ci-blue svg  { fill: var(--blue); }
+    .ci-wa   { background: rgba(37,211,102,0.12); }  .ci-wa svg    { fill: #25D366; }
+    .ci-ig   { background: rgba(225,48,108,0.1); }   .ci-ig svg    { fill: #E1306C; }
+    .ci-fb   { background: rgba(66,103,178,0.1); }   .ci-fb svg    { fill: #4267B2; }
+    .ci-mail { background: rgba(20,0,135,0.08); }    .ci-mail svg  { fill: var(--blue); }
+
+    .contact-item-text .label {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--mid);
+      margin-bottom: 2px;
+    }
+    .contact-item-text .value {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--dark);
+    }
+
+    /* ─── FOOTER ─────────────────────────────────────────────── */
+    footer {
+      background: var(--dark);
+      color: rgba(255,255,255,0.8);
+      padding: clamp(2.5rem,6vw,4rem) clamp(1rem,6vw,5rem);
+    }
+
+    .footer-top {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr;
+      gap: clamp(2rem,5vw,4rem);
+      padding-bottom: clamp(2rem,4vw,3rem);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      margin-bottom: clamp(1.5rem,3vw,2rem);
+    }
+
+    .footer-logo { height: 44px; object-fit: contain; filter: brightness(0) invert(1); margin-bottom: 14px; }
+    .footer-brand p {
+      font-size: 0.88rem;
+      line-height: 1.7;
+      color: rgba(255,255,255,0.6);
+      max-width: 280px;
+      margin-bottom: 20px;
+    }
+
+    .footer-social { display: flex; gap: 10px; }
+    .social-btn {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .social-btn:hover { background: rgba(255,255,255,0.15); transform: translateY(-2px); }
+    .social-btn svg { width: 18px; height: 18px; fill: rgba(255,255,255,0.85); }
+
+    .footer-nav h4 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--yellow);
+      margin-bottom: 16px;
+    }
+    .footer-nav ul { display: flex; flex-direction: column; gap: 10px; }
+    .footer-nav a { font-size: 0.88rem; color: rgba(255,255,255,0.6); transition: color 0.2s; }
+    .footer-nav a:hover { color: var(--white); }
+
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .footer-bottom p { font-size: 0.8rem; color: rgba(255,255,255,0.4); }
+    .footer-credit { font-size: 0.78rem; color: rgba(255,255,255,0.35); }
+    .footer-credit a { color: var(--yellow); transition: opacity 0.2s; }
+    .footer-credit a:hover { opacity: 0.8; }
+
+    /* ─── FLOATING WHATSAPP ──────────────────────────────────── */
+    .wa-float {
+      position: fixed;
+      bottom: 28px; right: 28px;
+      z-index: 200;
+      width: 60px; height: 60px;
+      background: #25D366;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 20px rgba(37,211,102,0.4);
+      text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+      animation: wa-pulse 3s infinite;
+    }
+    .wa-float:hover {
+      transform: scale(1.1);
+      box-shadow: 0 8px 32px rgba(37,211,102,0.5);
+      animation: none;
+    }
+    .wa-float svg { width: 30px; height: 30px; fill: white; }
+
+    @keyframes wa-pulse {
+      0%,100% { box-shadow: 0 4px 20px rgba(37,211,102,0.4), 0 0 0 0 rgba(37,211,102,0.4); }
+      50%      { box-shadow: 0 4px 20px rgba(37,211,102,0.4), 0 0 0 12px rgba(37,211,102,0); }
+    }
+
+    /* ─── RESPONSIVE ─────────────────────────────────────────── */
+    @media (max-width: 1023px) {
+      .hero { grid-template-columns: 1fr; min-height: auto; padding-top: 3rem; padding-bottom: 3rem; }
+      .hero-visual { padding-left: 0; }
+      .hero-stats { gap: 20px; }
+      .products-grid { grid-template-columns: repeat(2, 1fr); }
+      .about-grid { grid-template-columns: 1fr; }
+      .contact-grid { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: 1fr 1fr; }
+      .nav-links { display: none; }
+      .nav-cta   { display: none; }
+      .hamburger { display: flex; }
+    }
+
+    @media (max-width: 639px) {
+      .products-grid { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 2rem; }
+      .hero-actions { flex-direction: column; }
+      .hero-actions a { width: 100%; justify-content: center; }
+      .hero-stats { gap: 16px; }
+      .stat-divider { display: none; }
+      .form-row { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: 1fr; }
+      .footer-bottom { flex-direction: column; align-items: flex-start; }
+      .about-mini-stats { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══════ INTRO SCREEN ══════ -->
+  <div id="intro" aria-hidden="true">
+    <!-- Mitad superior → lleva el logo y sube al hacer split -->
+    <div class="intro-top">
+      <div class="intro-logo-wrap">
+        <img src="Recursos/DS%20LOGO.png" alt="Droguería Social" class="intro-logo" />
+        <div class="intro-bar"></div>
+      </div>
+    </div>
+    <!-- Mitad inferior → lleva el texto y baja al hacer split -->
+    <div class="intro-bottom">
+      <div class="intro-text-wrap">
+        <div class="intro-name">Droguería Social</div>
+        <div class="intro-tagline">Donde todos pueden comprar</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ NAVBAR ══════ -->
+  <nav class="navbar" role="navigation" aria-label="Navegación principal">
+    <a href="#inicio" class="nav-logo" aria-label="Droguería Social — Inicio">
+      <img src="Recursos/DS LOGO.png" alt="Logo Droguería Social" />
+      <div>
+        <div class="nav-logo-text">Droguería Social</div>
+        <div class="nav-logo-sub">Cúcuta, N. de Santander</div>
+      </div>
+    </a>
+
+    <ul class="nav-links" role="list">
+      <li><a href="#inicio">Inicio</a></li>
+      <li><a href="#productos">Productos</a></li>
+      <li><a href="#nosotros">Nosotros</a></li>
+      <li><a href="#contacto">Contacto</a></li>
+    </ul>
+
+    <a href="https://wa.me/573102978063?text=Hola%2C%20quiero%20hacer%20un%20pedido"
+       class="nav-cta" target="_blank" rel="noopener" aria-label="Contactar por WhatsApp">
+      <!-- WhatsApp SVG -->
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      WhatsApp
+    </a>
+
+    <button class="hamburger" id="hamburger" aria-label="Menú" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <div class="mobile-menu" id="mobile-menu" role="dialog" aria-label="Menú móvil">
+    <a href="#inicio"    onclick="closeMobileMenu()">Inicio</a>
+    <a href="#productos" onclick="closeMobileMenu()">Productos</a>
+    <a href="#nosotros"  onclick="closeMobileMenu()">Nosotros</a>
+    <a href="#contacto"  onclick="closeMobileMenu()">Contacto</a>
+    <a href="https://wa.me/573102978063?text=Hola%2C%20quiero%20hacer%20un%20pedido"
+       class="mob-cta" target="_blank" rel="noopener" onclick="closeMobileMenu()">WhatsApp</a>
+  </div>
+
+  <!-- ══════ HERO ══════ -->
+  <section id="inicio" class="hero">
+    <div class="hero-text">
+      <div class="hero-badge reveal">Cúcuta &nbsp;·&nbsp; Abierto todos los días</div>
+
+      <h1 class="reveal" style="transition-delay:.1s">
+        Donde <em>todos</em><br />pueden comprar
+      </h1>
+
+      <p class="hero-desc reveal" style="transition-delay:.2s">
+        Medicamentos con y sin receta, vitaminas, cuidado personal y mucho más.
+        Domicilios gratis en Cúcuta. Paga en efectivo, tarjeta o transferencia.
+      </p>
+
+      <div class="hero-actions reveal" style="transition-delay:.3s">
+        <a href="#productos" class="btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="white" aria-hidden="true"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+          Ver productos
+        </a>
+        <a href="https://wa.me/573102978063?text=Hola%2C%20quiero%20hacer%20un%20pedido"
+           class="btn-secondary" target="_blank" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Pedir por WhatsApp
+        </a>
+      </div>
+
+      <div class="hero-stats reveal" style="transition-delay:.4s">
+        <div class="stat-item">
+          <div class="stat-num">500+</div>
+          <div class="stat-label">Clientes al mes</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-num">$0</div>
+          <div class="stat-label">Costo de domicilio</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-num">7/7</div>
+          <div class="stat-label">Días de atención</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-num">100%</div>
+          <div class="stat-label">Pagos seguros</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-visual reveal" style="transition-delay:.2s">
+      <div class="video-container">
+        <!--
+          CÓMO CAMBIAR EL VIDEO:
+          Opción A – YouTube:  borra el div.video-placeholder y pon:
+            <iframe src="https://www.youtube.com/embed/TU_VIDEO_ID" allowfullscreen></iframe>
+          Opción B – Archivo local:
+            <video src="tu-video.mp4" poster="poster.jpg" controls></video>
+        -->
+        <div class="video-placeholder">
+          <div class="play-btn" role="button" tabindex="0" aria-label="Reproducir video institucional">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+          <div class="video-label">Video institucional</div>
+        </div>
+      </div>
+      <div class="video-note">
+        Reemplaza este espacio con tu video de YouTube o un archivo .mp4 — ver comentario en el HTML
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ PRODUCTOS ══════ -->
+  <section id="productos">
+    <div class="section-header reveal">
+      <div class="section-label">Catálogo</div>
+      <h2 class="section-title">Nuestros Productos</h2>
+      <p class="section-sub">
+        Medicamentos de venta libre, vitaminas y cuidado personal a precios accesibles.
+        Pide tu domicilio gratis por WhatsApp.
+      </p>
+    </div>
+
+    <div class="products-grid">
+
+      <!-- Producto 1 -->
+      <div class="product-card reveal" style="transition-delay:.05s">
+        <div class="product-img-wrap">
+          <img src="Recursos/Producto 1.jpeg" alt="Complejo Vitamínico B12" loading="lazy" />
+          <div class="product-badge">Vitaminas</div>
+        </div>
+        <div class="product-info">
+          <div class="product-category">Suplementos</div>
+          <div class="product-name">Complejo Vitamínico B12</div>
+          <div class="product-price">$28.900 <span class="product-price-label">COP</span></div>
+          <div class="btn-add">
+            <button class="btn-carrito" onclick="pedirWhatsApp('Complejo Vitamínico B12','$28.900')">Pedir ahora</button>
+            <a href="https://wa.me/573102978063?text=Hola%2C%20quiero%20pedir%3A%20Complejo%20Vitamínico%20B12%20-%20%2428.900"
+               class="btn-whatsapp-prod" target="_blank" rel="noopener" aria-label="Pedir por WhatsApp">
+              <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Producto 2 -->
+      <div class="product-card reveal" style="transition-delay:.1s">
+        <div class="product-img-wrap">
+          <img src="Recursos/Producto 2.jpeg" alt="Acetaminofén 500mg x 100 tabletas" loading="lazy" />
+          <div class="product-badge">Más vendido</div>
+        </div>
+        <div class="product-info">
+          <div class="product-category">Analgésicos</div>
+          <div class="product-name">Acetaminofén 500 mg × 100 tab.</div>
+          <div class="product-price">$12.500 <span class="product-price-label">COP</span></div>
+          <div class="btn-add">
+            <button class="btn-carrito" onclick="pedirWhatsApp('Acetaminofén 500mg x 100','$12.500')">Pedir ahora</button>
+            <a href="https://wa.me/573102978063?text=Hola%2C%20quiero%20pedir%3A%20Acetaminofén%20500mg%20x%20100%20-%20%2412.500"
+               class="btn-whatsapp-prod" target="_blank" rel="noopener" aria-label="Pedir por WhatsApp">
+              <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Producto 3 -->
+      <div class="product-card reveal" style="transition-delay:.15s">
+        <div class="product-img-wrap">
+          <img src="Recursos/Producto 3.jpeg" alt="Crema Hidratante Corporal 400ml" loading="lazy" />
+          <div class="product-badge">Cuidado personal</div>
+        </div>
+        <div class="product-info">
+          <div class="product-category">Dermocosmética</div>
+          <div class="product-name">Crema Hidratante Corporal 400 ml</div>
+          <div class="product-price">$35.000 <span class="product-price-label">COP</span></div>
+          <div class="btn-add">
+            <button class="btn-carrito" onclick="pedirWhatsApp('Crema Hidratante Corporal','$35.000')">Pedir ahora</button>
+            <a href="https://wa.me/573102978063?text=Hola%2C%20quiero%20pedir%3A%20Crema%20Hidratante%20Corporal%20-%20%2435.000"
+               class="btn-whatsapp-prod" target="_blank" rel="noopener" aria-label="Pedir por WhatsApp">
+              <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Producto 4 -->
+      <div class="product-card reveal" style="transition-delay:.2s">
+        <div class="product-img-wrap">
+          <img src="Recursos/Producto 4.jpeg" alt="Suero Oral Rehidratante x6 sobres" loading="lazy" />
+          <div class="product-badge">Oferta</div>
+        </div>
+        <div class="product-info">
+          <div class="product-category">Hidratación</div>
+          <div class="product-name">Suero Oral Rehidratante × 6 sobres</div>
+          <div class="product-price">$18.700 <span class="product-price-label">COP</span></div>
+          <div class="btn-add">
+            <button class="btn-carrito" onclick="pedirWhatsApp('Suero Oral Rehidratante x6','$18.700')">Pedir ahora</button>
+            <a href="https://wa.me/573102978063?text=Hola%2C%20quiero%20pedir%3A%20Suero%20Oral%20Rehidratante%20x6%20-%20%2418.700"
+               class="btn-whatsapp-prod" target="_blank" rel="noopener" aria-label="Pedir por WhatsApp">
+              <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════ QUIÉNES SOMOS ══════ -->
+  <section id="nosotros">
+    <div class="about-grid">
+      <div>
+        <div class="section-label reveal">Quiénes somos</div>
+        <h2 class="section-title reveal" style="transition-delay:.05s">
+          Tu droguería de<br />confianza en Cúcuta
+        </h2>
+        <p class="section-sub reveal" style="transition-delay:.1s">
+          Somos una droguería comprometida con el bienestar de toda la comunidad cucuteña.
+          Creemos que el acceso a los medicamentos no debería ser un privilegio —
+          por eso nuestro lema es <strong>"Donde todos pueden comprar"</strong>.
+        </p>
+
+        <div class="about-values">
+          <div class="value-card reveal" style="transition-delay:.15s">
+            <div class="value-icon">
+              <svg viewBox="0 0 24 24"><path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg>
+            </div>
+            <div class="value-text">
+              <h4>Medicamentos completos</h4>
+              <p>Todo tipo de medicamentos recetados y de libre venta, siempre a tu alcance.</p>
+            </div>
+          </div>
+
+          <div class="value-card reveal" style="transition-delay:.2s">
+            <div class="value-icon">
+              <svg viewBox="0 0 24 24"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zm-.5 1.5l1.96 2.5H17V9.5h2.5zM6 18c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm2.22-3c-.55-.61-1.33-1-2.22-1s-1.67.39-2.22 1H3V6h12v9H8.22zM18 18c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/></svg>
+            </div>
+            <div class="value-text">
+              <h4>Domicilios gratis</h4>
+              <p>Nuestros domicilios son totalmente gratuitos. Pides desde casa y nosotros te lo llevamos.</p>
+            </div>
+          </div>
+
+          <div class="value-card reveal" style="transition-delay:.25s">
+            <div class="value-icon">
+              <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
+            </div>
+            <div class="value-text">
+              <h4>Pagos seguros</h4>
+              <p>Transferencias, tarjeta débito/crédito o efectivo — tú eliges cómo pagar.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="about-visual reveal" style="transition-delay:.1s">
+        <div class="about-big-stat">
+          <div class="big-num">+500</div>
+          <div class="big-label">Clientes felices cada mes</div>
+        </div>
+        <div class="about-mini-stats">
+          <div class="mini-stat">
+            <div class="m-num">7</div>
+            <div class="m-label">Días a la semana</div>
+          </div>
+          <div class="mini-stat">
+            <div class="m-num">$0</div>
+            <div class="m-label">Costo de domicilio</div>
+          </div>
+          <div class="mini-stat">
+            <div class="m-num">3</div>
+            <div class="m-label">Formas de pago</div>
+          </div>
+          <div class="mini-stat">
+            <div class="m-num">100%</div>
+            <div class="m-label">Certificados</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ CONTACTO ══════ -->
+  <section id="contacto">
+    <div class="section-header reveal">
+      <div class="section-label">Afíliate</div>
+      <h2 class="section-title">Contáctanos</h2>
+      <p class="section-sub">
+        Regístrate para recibir ofertas exclusivas y atención personalizada.
+        También puedes escribirnos directamente por WhatsApp.
+      </p>
+    </div>
+
+    <div class="contact-grid">
+      <!-- Formulario -->
+      <div class="contact-form reveal" style="transition-delay:.05s">
+        <div class="form-title">Formulario de afiliado</div>
+        <div class="form-sub">Completa tus datos y te contactaremos para confirmar tu registro y enviarte tus primeras ofertas.</div>
+
+        <form id="contactForm" novalidate>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="nombres">Nombres <span>*</span></label>
+              <input type="text" id="nombres" name="nombres" placeholder="Tu nombre completo" required />
+              <div class="form-error" id="err-nombres"></div>
+            </div>
+            <div class="form-group">
+              <label for="cedula">Cédula (C.C.) <span>*</span></label>
+              <input type="text" id="cedula" name="cedula" placeholder="Número de identificación" required />
+              <div class="form-error" id="err-cedula"></div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="telefono">Teléfono <span>*</span></label>
+              <input type="tel" id="telefono" name="telefono" placeholder="Ej: 3101234567" required />
+              <div class="form-error" id="err-telefono"></div>
+            </div>
+            <div class="form-group">
+              <label for="email">Email <span>*</span></label>
+              <input type="email" id="email" name="email" placeholder="tu@correo.com" required />
+              <div class="form-error" id="err-email"></div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="direccion">Dirección <span>*</span></label>
+            <input type="text" id="direccion" name="direccion" placeholder="Tu dirección en Cúcuta" required />
+            <div class="form-error" id="err-direccion"></div>
+          </div>
+
+          <div class="checkbox-group">
+            <input type="checkbox" id="politica" name="politica" required />
+            <label for="politica">
+              Acepto la <a href="#" onclick="return false">política de privacidad</a> y autorizo
+              el tratamiento de mis datos personales conforme a la Ley 1581 de 2012.
+            </label>
+          </div>
+          <div class="form-error" id="err-politica" style="margin-top:-10px;margin-bottom:16px;"></div>
+
+          <button type="submit" class="btn-submit" id="submitBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="white" aria-hidden="true"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+            Enviar registro
+          </button>
+        </form>
+
+        <div class="form-success" id="formSuccess">
+          <div class="check-icon">
+            <svg viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <h3>¡Registro exitoso!</h3>
+          <p>Gracias por afiliarte a Droguería Social. Te contactaremos pronto al número que nos dejaste.</p>
+        </div>
+      </div>
+
+      <!-- Info + mapa -->
+      <div class="contact-info reveal" style="transition-delay:.1s">
+        <div class="map-embed">
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15812.5!2d-72.5148!3d7.8932!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e664d3fc88f8db5%3A0x6e12aac4a07c0a0!2sCúcuta%2C%20Norte%20de%20Santander!5e0!3m2!1ses!2sco!4v1700000000000"
+            width="100%" height="100%"
+            style="border:0;"
+            allowfullscreen=""
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            title="Ubicación Droguería Social — Cúcuta"></iframe>
+        </div>
+
+        <div class="contact-details">
+          <div class="contact-item">
+            <div class="contact-icon ci-blue">
+              <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+            </div>
+            <div class="contact-item-text">
+              <div class="label">Dirección</div>
+              <div class="value">Av. Guaimaral Av 11E No 5AN-202<br />Cúcuta, Norte de Santander</div>
+            </div>
+          </div>
+
+          <a href="https://wa.me/573102978063" class="contact-item" target="_blank" rel="noopener">
+            <div class="contact-icon ci-wa">
+              <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            </div>
+            <div class="contact-item-text">
+              <div class="label">WhatsApp</div>
+              <div class="value">+57 310-2978063</div>
+            </div>
+          </a>
+
+          <a href="https://www.instagram.com/drogueriasocial/" class="contact-item" target="_blank" rel="noopener">
+            <div class="contact-icon ci-ig">
+              <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            </div>
+            <div class="contact-item-text">
+              <div class="label">Instagram</div>
+              <div class="value">@drogueriasocial</div>
+            </div>
+          </a>
+
+          <a href="https://www.facebook.com/drogueriasociall" class="contact-item" target="_blank" rel="noopener">
+            <div class="contact-icon ci-fb">
+              <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            </div>
+            <div class="contact-item-text">
+              <div class="label">Facebook</div>
+              <div class="value">Droguería Social</div>
+            </div>
+          </a>
+
+          <a href="mailto:info@drogueriasocial.org" class="contact-item">
+            <div class="contact-icon ci-mail">
+              <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+            </div>
+            <div class="contact-item-text">
+              <div class="label">Email</div>
+              <div class="value">info@drogueriasocial.org</div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ FOOTER ══════ -->
+  <footer>
+    <div class="footer-top">
+      <div class="footer-brand">
+        <img src="Recursos/DS LOGO.png" alt="Droguería Social" class="footer-logo" />
+        <p>Donde todos pueden comprar. Tu droguería de confianza en Cúcuta, Norte de Santander. Medicamentos y domicilios gratis todos los días.</p>
+        <div class="footer-social">
+          <a href="https://wa.me/573102978063" class="social-btn" target="_blank" rel="noopener" aria-label="WhatsApp">
+            <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          </a>
+          <a href="https://www.instagram.com/drogueriasocial/" class="social-btn" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          </a>
+          <a href="https://www.facebook.com/drogueriasociall" class="social-btn" target="_blank" rel="noopener" aria-label="Facebook">
+            <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <nav class="footer-nav" aria-label="Links de navegación">
+        <h4>Navegación</h4>
+        <ul>
+          <li><a href="#inicio">Inicio</a></li>
+          <li><a href="#productos">Productos</a></li>
+          <li><a href="#nosotros">Quiénes somos</a></li>
+          <li><a href="#contacto">Afiliados</a></li>
+        </ul>
+      </nav>
+
+      <div class="footer-nav">
+        <h4>Contacto</h4>
+        <ul>
+          <li><a href="https://wa.me/573102978063" target="_blank" rel="noopener">+57 310-2978063</a></li>
+          <li><a href="mailto:info@drogueriasocial.org">info@drogueriasocial.org</a></li>
+          <li><a href="https://www.instagram.com/drogueriasocial/" target="_blank" rel="noopener">@drogueriasocial</a></li>
+          <li>Av. Guaimaral Av 11E No 5AN-202</li>
+          <li>Cúcuta, N. de Santander</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2025 Droguería Social. Todos los derechos reservados.</p>
+      <div class="footer-credit">
+        Diseñado por <a href="https://www.instagram.com/synkcreat/" target="_blank" rel="noopener">SYNK Creative</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ══════ BOTÓN FLOTANTE WHATSAPP ══════ -->
+  <a href="https://wa.me/573102978063?text=Hola%2C%20quiero%20hacer%20un%20pedido"
+     class="wa-float" target="_blank" rel="noopener" aria-label="Contactar por WhatsApp">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+  </a>
+
+  <!-- ══════ JAVASCRIPT ══════ -->
+  <script>
+    /* INTRO ANIMATION
+       - Frame 0: pantalla cerrada (ambas mitades en translateY(0) tapando todo)
+       - 1800ms: se agrega .splitting → mitades se abren (top sube, bottom baja) en 1s
+       - 2850ms: intro se oculta, scroll habilitado, reveals iniciados             */
+    window.addEventListener('DOMContentLoaded', () => {
+      const intro = document.getElementById('intro');
+      setTimeout(() => intro.classList.add('splitting'), 1800);
+      setTimeout(() => {
+        intro.style.display = 'none';
+        document.body.style.overflow = 'auto';
+        initReveal();
+      }, 2850);
+    });
+
+    /* HAMBURGER */
+    const hamburger   = document.getElementById('hamburger');
+    const mobileMenu  = document.getElementById('mobile-menu');
+
+    hamburger.addEventListener('click', () => {
+      const isOpen = mobileMenu.classList.toggle('open');
+      hamburger.classList.toggle('open', isOpen);
+      hamburger.setAttribute('aria-expanded', String(isOpen));
+    });
+
+    function closeMobileMenu() {
+      mobileMenu.classList.remove('open');
+      hamburger.classList.remove('open');
+      hamburger.setAttribute('aria-expanded', 'false');
+    }
+
+    /* SMOOTH SCROLL */
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+      link.addEventListener('click', e => {
+        const target = document.querySelector(link.getAttribute('href'));
+        if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+      });
+    });
+
+    /* INTERSECTION OBSERVER */
+    function initReveal() {
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12 });
+      document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    }
+
+    /* WHATSAPP POR PRODUCTO */
+    function pedirWhatsApp(producto, precio) {
+      const msg = encodeURIComponent(`Hola, quiero pedir: ${producto} - ${precio}`);
+      window.open(`https://wa.me/573102978063?text=${msg}`, '_blank');
+    }
+
+    /* FORM VALIDATION */
+    const form        = document.getElementById('contactForm');
+    const formSuccess = document.getElementById('formSuccess');
+
+    function setError(id, msg) {
+      const errEl = document.getElementById('err-' + id);
+      if (errEl) errEl.textContent = msg;
+      const input = document.getElementById(id);
+      if (input) input.classList.toggle('error', !!msg);
+    }
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      let ok = true;
+
+      const nombres   = document.getElementById('nombres').value.trim();
+      const cedula    = document.getElementById('cedula').value.trim();
+      const telefono  = document.getElementById('telefono').value.trim();
+      const email     = document.getElementById('email').value.trim();
+      const direccion = document.getElementById('direccion').value.trim();
+      const politica  = document.getElementById('politica').checked;
+
+      setError('nombres',   nombres   ? '' : 'Campo obligatorio.');
+      setError('cedula',    cedula    ? '' : 'Campo obligatorio.');
+      setError('telefono',  telefono  ? '' : 'Campo obligatorio.');
+      setError('direccion', direccion ? '' : 'Campo obligatorio.');
+      if (!nombres || !cedula || !telefono || !direccion) ok = false;
+
+      const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      setError('email', emailOk ? '' : 'Ingresa un email válido.');
+      if (!emailOk) ok = false;
+
+      const errP = document.getElementById('err-politica');
+      if (!politica) { errP.textContent = 'Debes aceptar la política de privacidad.'; ok = false; }
+      else errP.textContent = '';
+
+      if (!ok) return;
+
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.textContent = 'Enviando…';
+
+      setTimeout(() => {
+        form.style.display = 'none';
+        formSuccess.style.display = 'block';
+      }, 1200);
+    });
+
+    /* NAVBAR SHADOW ON SCROLL */
+    window.addEventListener('scroll', () => {
+      document.querySelector('.navbar').style.boxShadow =
+        window.scrollY > 10
+          ? '0 2px 16px rgba(20,0,135,0.1)'
+          : '0 1px 0 rgba(20,0,135,0.08)';
+    }, { passive: true });
+  </script>
+</body>
+</html>
