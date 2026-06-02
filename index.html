@@ -532,6 +532,98 @@
     }
     .section-header { margin-bottom: clamp(2rem,5vw,3.5rem); }
 
+    /* ─── SHOPIFY: loading / carrito / toast ────────────────── */
+    .products-loading {
+      grid-column: 1 / -1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      padding: 64px 20px;
+      color: var(--mid);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.9rem;
+    }
+    .loading-spinner {
+      width: 40px; height: 40px;
+      border: 3px solid rgba(20,0,135,0.15);
+      border-top-color: var(--blue);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .products-error {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 40px;
+      color: var(--mid);
+      font-family: 'Outfit', sans-serif;
+    }
+    .products-error a { color: var(--blue); text-decoration: underline; }
+
+    .cart-btn {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px; height: 44px;
+      background: rgba(20,0,135,0.06);
+      border-radius: 10px;
+      margin-left: 8px;
+      cursor: pointer;
+      border: none;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    .cart-btn:hover { background: rgba(20,0,135,0.12); }
+    .cart-btn svg { width: 20px; height: 20px; fill: var(--blue); }
+    .cart-count {
+      position: absolute;
+      top: -6px; right: -6px;
+      background: var(--yellow);
+      color: var(--blue);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 800;
+      min-width: 18px; height: 18px;
+      padding: 0 4px;
+      border-radius: 9px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cart-toast {
+      position: fixed;
+      bottom: 100px; right: 28px;
+      background: var(--dark);
+      color: rgba(255,255,255,0.9);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 14px 20px;
+      border-radius: 12px;
+      box-shadow: var(--shadow-lg);
+      z-index: 500;
+      transform: translateY(12px);
+      opacity: 0;
+      transition: all 0.3s ease;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      max-width: 280px;
+    }
+    .cart-toast.show { transform: translateY(0); opacity: 1; }
+    .cart-toast .toast-checkout {
+      color: var(--yellow);
+      cursor: pointer;
+      pointer-events: auto;
+      text-decoration: underline;
+      white-space: nowrap;
+    }
+
     /* ─── REVEAL ─────────────────────────────────────────────── */
     .reveal {
       opacity: 0;
@@ -1091,6 +1183,11 @@
       WhatsApp
     </a>
 
+    <button class="cart-btn" id="cartBtn" onclick="irAlCheckout()" aria-label="Ver carrito">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96C5 16.1 6.9 18 9 18h12v-2H9.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63H19c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0023.46 5H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
+      <span class="cart-count" id="cartCount">0</span>
+    </button>
+
     <button class="hamburger" id="hamburger" aria-label="Menú" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
@@ -1179,88 +1276,12 @@
       </p>
     </div>
 
-    <div class="products-grid">
-
-      <!-- Producto 1 -->
-      <div class="product-card reveal" style="transition-delay:.05s">
-        <div class="product-img-wrap">
-          <img src="Recursos/Producto 1.jpeg" alt="Complejo Vitamínico B12" loading="lazy" />
-          <div class="product-badge">Vitaminas</div>
-        </div>
-        <div class="product-info">
-          <div class="product-category">Suplementos</div>
-          <div class="product-name">Complejo Vitamínico B12</div>
-          <div class="product-price">$28.900 <span class="product-price-label">COP</span></div>
-          <div class="btn-add">
-            <button class="btn-carrito" onclick="pedirWhatsApp('Complejo Vitamínico B12','$28.900')">Pedir ahora</button>
-            <a href="https://wa.me/573102978063?text=Hola%2C%20quiero%20pedir%3A%20Complejo%20Vitamínico%20B12%20-%20%2428.900"
-               class="btn-whatsapp-prod" target="_blank" rel="noopener" aria-label="Pedir por WhatsApp">
-              <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-            </a>
-          </div>
-        </div>
+    <!-- El JS de Shopify llena este grid dinámicamente -->
+    <div class="products-grid" id="shopify-products-grid">
+      <div class="products-loading">
+        <div class="loading-spinner"></div>
+        <span>Cargando productos…</span>
       </div>
-
-      <!-- Producto 2 -->
-      <div class="product-card reveal" style="transition-delay:.1s">
-        <div class="product-img-wrap">
-          <img src="Recursos/Producto 2.jpeg" alt="Acetaminofén 500mg x 100 tabletas" loading="lazy" />
-          <div class="product-badge">Más vendido</div>
-        </div>
-        <div class="product-info">
-          <div class="product-category">Analgésicos</div>
-          <div class="product-name">Acetaminofén 500 mg × 100 tab.</div>
-          <div class="product-price">$12.500 <span class="product-price-label">COP</span></div>
-          <div class="btn-add">
-            <button class="btn-carrito" onclick="pedirWhatsApp('Acetaminofén 500mg x 100','$12.500')">Pedir ahora</button>
-            <a href="https://wa.me/573102978063?text=Hola%2C%20quiero%20pedir%3A%20Acetaminofén%20500mg%20x%20100%20-%20%2412.500"
-               class="btn-whatsapp-prod" target="_blank" rel="noopener" aria-label="Pedir por WhatsApp">
-              <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <!-- Producto 3 -->
-      <div class="product-card reveal" style="transition-delay:.15s">
-        <div class="product-img-wrap">
-          <img src="Recursos/Producto 3.jpeg" alt="Crema Hidratante Corporal 400ml" loading="lazy" />
-          <div class="product-badge">Cuidado personal</div>
-        </div>
-        <div class="product-info">
-          <div class="product-category">Dermocosmética</div>
-          <div class="product-name">Crema Hidratante Corporal 400 ml</div>
-          <div class="product-price">$35.000 <span class="product-price-label">COP</span></div>
-          <div class="btn-add">
-            <button class="btn-carrito" onclick="pedirWhatsApp('Crema Hidratante Corporal','$35.000')">Pedir ahora</button>
-            <a href="https://wa.me/573102978063?text=Hola%2C%20quiero%20pedir%3A%20Crema%20Hidratante%20Corporal%20-%20%2435.000"
-               class="btn-whatsapp-prod" target="_blank" rel="noopener" aria-label="Pedir por WhatsApp">
-              <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <!-- Producto 4 -->
-      <div class="product-card reveal" style="transition-delay:.2s">
-        <div class="product-img-wrap">
-          <img src="Recursos/Producto 4.jpeg" alt="Suero Oral Rehidratante x6 sobres" loading="lazy" />
-          <div class="product-badge">Oferta</div>
-        </div>
-        <div class="product-info">
-          <div class="product-category">Hidratación</div>
-          <div class="product-name">Suero Oral Rehidratante × 6 sobres</div>
-          <div class="product-price">$18.700 <span class="product-price-label">COP</span></div>
-          <div class="btn-add">
-            <button class="btn-carrito" onclick="pedirWhatsApp('Suero Oral Rehidratante x6','$18.700')">Pedir ahora</button>
-            <a href="https://wa.me/573102978063?text=Hola%2C%20quiero%20pedir%3A%20Suero%20Oral%20Rehidratante%20x6%20-%20%2418.700"
-               class="btn-whatsapp-prod" target="_blank" rel="noopener" aria-label="Pedir por WhatsApp">
-              <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-            </a>
-          </div>
-        </div>
-      </div>
-
     </div>
   </section>
 
@@ -1535,6 +1556,12 @@
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
   </a>
 
+  <!-- Toast carrito -->
+  <div class="cart-toast" id="cartToast" role="status" aria-live="polite">
+    <span class="toast-msg"></span>
+    <span class="toast-checkout" onclick="irAlCheckout()">Ir al pago →</span>
+  </div>
+
   <!-- ══════ JAVASCRIPT ══════ -->
   <script>
     /* INTRO ANIMATION
@@ -1576,17 +1603,203 @@
     });
 
     /* INTERSECTION OBSERVER */
+    let revealObserver;
     function initReveal() {
-      const observer = new IntersectionObserver(entries => {
+      revealObserver = new IntersectionObserver(entries => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
             entry.target.classList.add('visible');
-            observer.unobserve(entry.target);
+            revealObserver.unobserve(entry.target);
           }
         });
       }, { threshold: 0.12 });
-      document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+      document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
     }
+
+    /* ── SHOPIFY STOREFRONT API ──────────────────────────────── */
+    const SHOPIFY_DOMAIN = '09n17f-11.myshopify.com';
+    const SHOPIFY_TOKEN  = '12efea9c5d05090fd7bcb87bb0795126';
+    const SHOPIFY_URL    = `https://${SHOPIFY_DOMAIN}/api/2024-10/graphql.json`;
+
+    const WA_SVG = `<svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>`;
+
+    /* Estado del carrito (persiste en localStorage) */
+    let dsCart = JSON.parse(localStorage.getItem('ds_cart') || 'null');
+    if (dsCart) actualizarContador(dsCart.totalQuantity);
+
+    /* Petición genérica a Shopify */
+    async function shopifyFetch(query, variables = {}) {
+      const res = await fetch(SHOPIFY_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Shopify-Storefront-Access-Token': SHOPIFY_TOKEN
+        },
+        body: JSON.stringify({ query, variables })
+      });
+      const json = await res.json();
+      if (json.errors) throw new Error(json.errors[0].message);
+      return json.data;
+    }
+
+    /* Formatear precio: "28900.00" → "$28.900" */
+    function formatPrecio(amount) {
+      return '$' + Math.round(parseFloat(amount)).toLocaleString('es-CO');
+    }
+
+    /* Cargar y renderizar productos desde Shopify */
+    async function cargarProductos() {
+      const grid = document.getElementById('shopify-products-grid');
+      try {
+        const data = await shopifyFetch(`{
+          products(first: 12) {
+            edges {
+              node {
+                id title description productType
+                priceRange { minVariantPrice { amount } }
+                images(first: 1) { edges { node { url altText } } }
+                variants(first: 1) { edges { node { id availableForSale } } }
+              }
+            }
+          }
+        }`);
+
+        const productos = data.products.edges.map(e => e.node);
+
+        if (!productos.length) {
+          grid.innerHTML = `<p class="products-error">No hay productos disponibles aún.<br>
+            <a href="https://wa.me/573102978063">Pide por WhatsApp</a></p>`;
+          return;
+        }
+
+        grid.innerHTML = productos.map((p, i) => {
+          const img      = p.images.edges[0]?.node;
+          const variant  = p.variants.edges[0]?.node;
+          const precio   = formatPrecio(p.priceRange.minVariantPrice.amount);
+          const badge    = p.productType || 'Producto';
+          const waMsg    = encodeURIComponent(`Hola, quiero pedir: ${p.title} - ${precio}`);
+          const delay    = (i * 0.06).toFixed(2);
+          const agotado  = !variant?.availableForSale;
+          const varId    = variant?.id || '';
+
+          return `
+            <div class="product-card reveal" style="transition-delay:${delay}s">
+              <div class="product-img-wrap">
+                ${img ? `<img src="${img.url}" alt="${img.altText || p.title}" loading="lazy" />` : ''}
+                <div class="product-badge">${badge}</div>
+              </div>
+              <div class="product-info">
+                <div class="product-category">${p.productType || ''}</div>
+                <div class="product-name">${p.title}</div>
+                <div class="product-price">${precio} <span class="product-price-label">COP</span></div>
+                <div class="btn-add">
+                  <button class="btn-carrito"
+                    data-variant="${varId}"
+                    data-nombre="${p.title.replace(/"/g, '&quot;')}"
+                    data-precio="${precio}"
+                    onclick="agregarAlCarrito(this)"
+                    ${agotado ? 'disabled style="opacity:.5;cursor:not-allowed"' : ''}>
+                    ${agotado ? 'Agotado' : 'Agregar al carrito'}
+                  </button>
+                  <a href="https://wa.me/573102978063?text=${waMsg}"
+                     class="btn-whatsapp-prod" target="_blank" rel="noopener" aria-label="Pedir por WhatsApp">
+                    ${WA_SVG}
+                  </a>
+                </div>
+              </div>
+            </div>`;
+        }).join('');
+
+        /* Observar los nuevos elementos para el reveal */
+        if (revealObserver) {
+          grid.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+        }
+
+      } catch (err) {
+        console.error('Shopify error:', err);
+        grid.innerHTML = `<p class="products-error">No se pudieron cargar los productos.
+          <a href="https://wa.me/573102978063">Contáctanos por WhatsApp</a></p>`;
+      }
+    }
+
+    /* Agregar producto al carrito de Shopify */
+    async function agregarAlCarrito(btn) {
+      const variantId = btn.dataset.variant;
+      const nombre    = btn.dataset.nombre;
+      const precio    = btn.dataset.precio;
+      if (!variantId) return;
+
+      btn.disabled = true;
+      btn.textContent = 'Agregando…';
+
+      try {
+        if (!dsCart) {
+          /* Crear carrito nuevo */
+          const d = await shopifyFetch(`
+            mutation {
+              cartCreate(input: { lines: [{ merchandiseId: "${variantId}", quantity: 1 }] }) {
+                cart { id checkoutUrl totalQuantity }
+                userErrors { message }
+              }
+            }`);
+          dsCart = d.cartCreate.cart;
+        } else {
+          /* Agregar a carrito existente */
+          const d = await shopifyFetch(`
+            mutation {
+              cartLinesAdd(cartId: "${dsCart.id}", lines: [{ merchandiseId: "${variantId}", quantity: 1 }]) {
+                cart { id checkoutUrl totalQuantity }
+                userErrors { message }
+              }
+            }`);
+          dsCart = d.cartLinesAdd.cart;
+        }
+
+        localStorage.setItem('ds_cart', JSON.stringify(dsCart));
+        actualizarContador(dsCart.totalQuantity);
+        mostrarToast(`${nombre} agregado`);
+
+        btn.textContent = '✓ Agregado';
+        setTimeout(() => { btn.textContent = 'Agregar al carrito'; btn.disabled = false; }, 1800);
+
+      } catch (err) {
+        console.error('Cart error:', err);
+        btn.textContent = 'Error — intenta de nuevo';
+        setTimeout(() => { btn.textContent = 'Agregar al carrito'; btn.disabled = false; }, 2000);
+      }
+    }
+
+    /* Ir al checkout de Shopify */
+    function irAlCheckout() {
+      if (dsCart?.checkoutUrl) {
+        window.location.href = dsCart.checkoutUrl;
+      } else {
+        mostrarToast('Tu carrito está vacío');
+        document.getElementById('cartToast').querySelector('.toast-checkout').style.display = 'none';
+      }
+    }
+
+    /* Actualizar badge del carrito en navbar */
+    function actualizarContador(n) {
+      const badge = document.getElementById('cartCount');
+      if (!badge) return;
+      badge.textContent = n;
+      badge.style.display = n > 0 ? 'flex' : 'none';
+    }
+
+    /* Toast de confirmación */
+    function mostrarToast(texto) {
+      const toast = document.getElementById('cartToast');
+      const msg   = toast.querySelector('.toast-msg');
+      const link  = toast.querySelector('.toast-checkout');
+      msg.textContent = texto + ' · ';
+      link.style.display = dsCart ? 'inline' : 'none';
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3500);
+    }
+
+    /* Iniciar carga de productos */
+    cargarProductos();
 
     /* WHATSAPP POR PRODUCTO */
     function pedirWhatsApp(producto, precio) {
